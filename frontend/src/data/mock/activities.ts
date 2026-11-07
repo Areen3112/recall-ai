@@ -1,0 +1,121 @@
+import type { AgentActivity } from '../../types';
+
+export const MOCK_ACTIVITIES: AgentActivity[] = [
+  {
+    id: 'act-101',
+    type: 'memory_retrieval',
+    customer: 'Sarah Mitchell',
+    customerId: 'cust-sarah-mitchell-01',
+    description: 'Retrieved 3 long-term memories prior to response generation',
+    details: 'Recalled: failed Bluetooth forget-and-pair attempt, MacBook M2 hardware specs, and async chat preference. Looked up in 142ms.',
+    timestamp: '12 mins ago',
+    status: 'completed',
+    latencyMs: 142,
+    conversationId: 'conv-sarah-session-02',
+    sessionId: 'sarah-demo-v2-recall-session-9821'
+  },
+  {
+    id: 'act-102',
+    type: 'failed_attempt_recognition',
+    customer: 'Sarah Mitchell',
+    customerId: 'cust-sarah-mitchell-01',
+    description: 'Flagged action "bluetooth_repair_forget_and_pair" as failed',
+    details: 'Prevented assistant prompt from proposing repeated forget-and-pair troubleshooting. Filtered candidate actions.',
+    timestamp: '12 mins ago',
+    status: 'completed',
+    latencyMs: 18,
+    conversationId: 'conv-sarah-session-02',
+    sessionId: 'sarah-demo-v2-recall-session-9821'
+  },
+  {
+    id: 'act-103',
+    type: 'response_generation',
+    customer: 'Sarah Mitchell',
+    customerId: 'cust-sarah-mitchell-01',
+    description: 'Generated contextual troubleshooting reply via Groq',
+    details: 'Structured prompt executed against Llama 3.3 70B Versatile. Advised hardware reset + bluetoothd restart.',
+    timestamp: '11 mins ago',
+    status: 'completed',
+    latencyMs: 820,
+    conversationId: 'conv-sarah-session-02',
+    sessionId: 'sarah-demo-v2-recall-session-9821'
+  },
+  {
+    id: 'act-104',
+    type: 'escalation',
+    customer: 'Marcus Vance',
+    customerId: 'cust-marcus-vance-04',
+    description: 'Triggered Tier-2 Audio Systems Escalation ticket #ESC-4091',
+    details: 'Customer experienced 2 repeated failures on Windows 11 multipoint handoff. Frustration score 0.88 exceeded threshold.',
+    timestamp: '44 mins ago',
+    status: 'flagged',
+    latencyMs: 310,
+    conversationId: 'conv-marcus-01',
+    sessionId: 'marcus-session-nov07-1120'
+  },
+  {
+    id: 'act-105',
+    type: 'memory_retention',
+    customer: 'Sarah Mitchell',
+    customerId: 'cust-sarah-mitchell-01',
+    description: 'Committed failed attempt memory to Hindsight Cloud bank',
+    details: 'Action payload: bluetooth_repair_forget_and_pair -> failed. Tagged with verification: customer_report.',
+    timestamp: '52 mins ago',
+    status: 'completed',
+    latencyMs: 245,
+    conversationId: 'conv-sarah-session-01',
+    sessionId: 'sarah-demo-v2-learn-session-4b19'
+  },
+  {
+    id: 'act-106',
+    type: 'sentiment_analysis',
+    customer: 'Sarah Mitchell',
+    customerId: 'cust-sarah-mitchell-01',
+    description: 'Evaluated message sentiment: transition from frustrated to neutral',
+    details: 'Acknowledged customer feedback and memory retention reduced churn probability by 42%.',
+    timestamp: '53 mins ago',
+    status: 'completed',
+    latencyMs: 85,
+    conversationId: 'conv-sarah-session-01',
+    sessionId: 'sarah-demo-v2-learn-session-4b19'
+  },
+  {
+    id: 'act-107',
+    type: 'customer_identification',
+    customer: 'David Chen',
+    customerId: 'cust-david-chen-02',
+    description: 'Verified signed customer identity token for workspace scope',
+    details: 'HS256 signature verified against public workspace UUID. Resolved verified customer row.',
+    timestamp: '2 hours ago',
+    status: 'completed',
+    latencyMs: 22,
+    conversationId: 'conv-david-01',
+    sessionId: 'david-session-nov06-4401'
+  },
+  {
+    id: 'act-108',
+    type: 'troubleshooting_recommendation',
+    customer: 'David Chen',
+    customerId: 'cust-david-chen-02',
+    description: 'Synthesized Linux PipeWire buffer adjustment profile',
+    details: 'Cross-referenced audio developer knowledge base with LDAC codec requirements.',
+    timestamp: '2 hours ago',
+    status: 'completed',
+    latencyMs: 910,
+    conversationId: 'conv-david-01',
+    sessionId: 'david-session-nov06-4401'
+  },
+  {
+    id: 'act-109',
+    type: 'memory_retrieval',
+    customer: 'Priya Patel',
+    customerId: 'cust-priya-patel-05',
+    description: 'Retrieved enterprise fleet licensing records and MDM contract',
+    details: 'Loaded 65-seat agreement and designated administrator policy for NovaBio.',
+    timestamp: '3 hours ago',
+    status: 'completed',
+    latencyMs: 110,
+    conversationId: 'conv-priya-01',
+    sessionId: 'priya-session-nov05-3310'
+  }
+];

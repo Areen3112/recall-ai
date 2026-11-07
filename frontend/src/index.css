@@ -1,1 +1,100 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-base: #09090D;
+    --bg-sidebar: #0D0D13;
+    --bg-surface: #12121A;
+    --bg-elevated: #191923;
+    --bg-overlay: #21212E;
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-subtle-hover: rgba(255, 255, 255, 0.12);
+    --border-accent: rgba(155, 140, 255, 0.35);
+    --text-primary: #F4F4F7;
+    --text-secondary: #92929F;
+    --text-muted: #626270;
+    --accent-primary: #9B8CFF;
+    --accent-highlight: #B6A9FF;
+    --accent-subtle: rgba(155, 140, 255, 0.12);
+    --accent-glow: rgba(155, 140, 255, 0.25);
+    --status-emerald: #10B981;
+    --status-amber: #F59E0B;
+    --status-rose: #F43F5E;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* Subtle glow effects */
+.glow-accent {
+  box-shadow: 0 0 24px -4px rgba(155, 140, 255, 0.18);
+}
+
+.glow-accent-sm {
+  box-shadow: 0 0 12px -2px rgba(155, 140, 255, 0.22);
+}
+
+.glow-rose-sm {
+  box-shadow: 0 0 14px -2px rgba(244, 63, 94, 0.25);
+}
+
+.glow-emerald-sm {
+  box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.25);
+}
+
+/* Background grid patterns */
+.bg-grid-subtle {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+.bg-dots-subtle {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+/* Animations */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(0.98); }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
+@keyframes memoryPing {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-memory-ping {
+  animation: memoryPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

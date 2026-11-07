@@ -1,0 +1,243 @@
+openapi: 3.1.0
+
+info:
+  title: RECALL AI API
+  version: 1.0.0
+  description: Customer intelligence and persistent-memory support agent API.
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+
+tags:
+  - name: System
+  - name: Chat
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Backend is operational
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: healthy
+
+  /api/v1/chat:
+    post:
+      tags: [Chat]
+      summary: Send a customer or visitor message
+      operationId: sendChatMessage
+      description: >
+        Verifies a signed customer or visitor identity bound to the workspace,
+        reuses or creates a workspace-scoped conversation, retrieves memory,
+        generates and saves a response, and attempts memory retention. Exactly
+        one of customer_id or visitor_id must be a non-null UUID. A customer
+        identity must match the signed customer_id and an identity_verified
+        customer row. A visitor token is server-issued, visitor-scoped, and
+        cannot authenticate as a customer. The identity token must have a valid
+        HS256 signature, configured issuer and audience, iat and exp within the
+        configured maximum lifetime, matching workspace_id and identity_type,
+        and the corresponding subject claim. Browser-provided IDs are not proof
+        of identity. Idempotency is scoped to the resolved workspace conversation
+        and message role. Retries in the same session must use the same key and
+        request body; the same key in another conversation is a separate scope.
+      parameters:
+        - name: X-Workspace-ID
+          in: header
+          required: true
+          description: Public workspace UUID used to resolve the internal workspace.
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: >
+            Opaque key for this request, 16–128 characters. Allowed characters
+            are ASCII letters, digits, period, underscore, colon, and hyphen.
+            The key is unique per workspace conversation and message role. Use the
+            same key for retries of the same message in the same session; a
+            different customer message using that key in that conversation returns
+            409. Reuse in another conversation is independent.
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+            pattern: "^[A-Za-z0-9._:-]{16,128}$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: >
+            Response saved. Memory retention was attempted; if it failed,
+            X-Memory-Status is returned with value failed.
+          headers:
+            X-Memory-Status:
+              $ref: "#/components/headers/MemoryStatus"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "202":
+          description: >
+            Assistant response is saved, but required escalation ticket work
+            remains pending. The response body is the same ChatResponse shape.
+          headers:
+            X-Workflow-Status:
+              $ref: "#/components/headers/WorkflowStatus"
+            X-Memory-Status:
+              $ref: "#/components/headers/MemoryStatus"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "400":
+          description: Invalid request, workspace UUID, idempotency key, identity selection, or chat session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing, invalid, expired, wrongly bound, or incorrectly signed identity token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Workspace or verified customer record not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Idempotency key already belongs to a different customer message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Agent returned invalid structured output after its controlled retry.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: >
+            Chat service, database, memory provider, or Groq provider is temporarily
+            unavailable. Provider details and credentials are not returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Unexpected internal error. Details are not returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  headers:
+    WorkflowStatus:
+      description: Present only when a saved response has pending escalation work.
+      schema:
+        type: string
+        enum: [escalation-pending]
+    MemoryStatus:
+      description: Present only when memory retention failed after response persistence.
+      schema:
+        type: string
+        enum: [failed]
+  schemas:
+    ChatRequest:
+      type: object
+      required: [session_id, message]
+      properties:
+        customer_id:
+          type: [string, "null"]
+          format: uuid
+          description: Must match the customer_id claim in a valid signed customer token.
+        visitor_id:
+          type: [string, "null"]
+          format: uuid
+          description: Must match the visitor_id claim in a valid signed visitor token.
+        session_id:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Must not be blank; identifies the workspace-scoped conversation.
+        identity_token:
+          type: [string, "null"]
+          description: >
+            Required for successful processing. Signed by the configured trusted
+            issuer with configured audience, iat, exp, workspace_id,
+            identity_type, and exactly the matching customer_id or visitor_id claim.
+        message:
+          type: string
+          minLength: 1
+          maxLength: 10000
+      oneOf:
+        - required: [customer_id]
+          properties:
+            customer_id:
+              type: string
+              format: uuid
+            visitor_id:
+              type: "null"
+        - required: [visitor_id]
+          properties:
+            visitor_id:
+              type: string
+              format: uuid
+            customer_id:
+              type: "null"
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - session_id
+        - sentiment
+        - memories_used
+        - memory_retrieved
+        - escalation_required
+        - escalation_reason
+      properties:
+        response:
+          type: string
+        session_id:
+          type: string
+        sentiment:
+          type: string
+          enum: [positive, neutral, negative, frustrated, unknown]
+        memories_used:
+          type: array
+          items:
+            type: string
+        memory_retrieved:
+          type: boolean
+        escalation_required:
+          type: boolean
+        escalation_reason:
+          type: [string, "null"]
+
+    ErrorResponse:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          type: string

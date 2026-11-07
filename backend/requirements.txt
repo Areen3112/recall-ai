@@ -1,0 +1,23 @@
+# API framework
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# Database
+supabase
+
+# AI providers
+groq
+hindsight-client
+
+# Security and identity
+PyJWT[crypto]
+
+# Utilities
+python-dotenv
+httpx
+
+# Testing
+pytest
+pytest-asyncio
