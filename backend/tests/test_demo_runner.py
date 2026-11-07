@@ -330,6 +330,20 @@ def test_phase_one_accepts_the_exact_multistep_forget_and_pair_response():
     validate_phase_one_recommendation(response)
     assert recommended_action_ids(response) == {"bluetooth_forget_and_pair"}
 
+def test_phase_one_accepts_numbered_forget_and_pair_instructions():
+    response = (
+        "I’m sorry the disconnections are still happening. Let’s try a fresh pairing:\n"
+        "1. Open your device’s Settings → Bluetooth.\n"
+        "2. Locate the headphones, tap the info (i) icon and choose "
+        "“Forget This Device”.\n"
+        "3. Turn the headphones off, then back on to put them in pairing mode.\n"
+        "4. In Bluetooth settings, select the headphones to pair again.\n"
+        "After re-pairing, use them for a few minutes to see if the connection stays stable."
+    )
+
+    validate_phase_one_recommendation(response)
+    assert recommended_action_ids(response) == {"bluetooth_forget_and_pair"}
+
 
 def test_multistep_matcher_does_not_accept_generic_bluetooth_troubleshooting():
     assert not recommended_action_ids(

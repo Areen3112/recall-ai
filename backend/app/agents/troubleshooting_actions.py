@@ -20,7 +20,11 @@ _DEVICE_CONTEXT = re.compile(r"\b(?:bluetooth|headphones?|headsets?|earbuds?|pai
 _DEVICE_REFERENCE = re.compile(
     r"\b(?:bluetooth|headphones?|headsets?|earbuds?|paired devices?|saved profiles?|devices?)\b", re.I
 )
-_ACTION_CUE = re.compile(r"\b(?:try|recommend|suggest|should|could|can|please|step|first)\b", re.I)
+_ACTION_CUE = re.compile(
+    r"\b(?:try|recommend|suggest|should|could|can|please|step|first|"
+    r"select|choose|tap|click|locate|find)\b",
+    re.I,
+)
 _DIRECTIVE_START = re.compile(
     r"^\s*(?:find|locate|select|choose|tap|click|forget|remove|delete|clear|erase|unpair|"
     r"put|place|enter|start|begin|pair|re-pair|connect|reconnect)\b",
